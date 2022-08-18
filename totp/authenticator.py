@@ -130,10 +130,20 @@ class Authenticator:
         """
         with io.BytesIO(bytes) as f:
             if f.read(len(MAGIC)) == MAGIC:
-                details.name = f.read(unpack("i", f.read(4))[0]).decode(encoding="utf-8")
-                details.description = f.read(unpack("i", f.read(4))[0]).decode(encoding="utf-8")
-                self.__secret = f.read(unpack("i", f.read(4))[0])
+                # read name
+                length = unpack("i", f.read(4))[0]
+                details.name = f.read(length).decode(encoding="utf-8")
+
+                # read description
+                length = unpack("i", f.read(4))[0]
+                details.description = f.read(length).decode(encoding="utf-8")
+
+                # read secret
+                length = unpack("i", f.read(4))[0]
+                self.__secret = f.read(length)
+
                 return True
+
         return False
 
     @staticmethod
