@@ -74,19 +74,27 @@ class Authenticator:
 
         i = 0
         while i < len(self.__hashes):
+            # check if hash is expired
             if timestamp - self.__hashes[i].time > self.__expire:
+                # remove expired hash
                 del self.__hashes[i]
                 i -= 1
+            # check if code is already used
             elif self.__hashes[i].value == hash_value:
+                # code is already used
                 return False
 
             i += 1
 
+        # check if given code is valid
         for i in range(timestamp - self.__expire, timestamp):
             if self.__get_code(i) == code:
+                # add hash to hashes collection (prevents code reuse until hash expires and is removed)
                 self.__hashes.append(Authenticator.Hash(hash_value, self.__get_timestamp()))
-                return True
 
+                # code is valid
+                return True
+                
         return False
 
     def clear(self):
